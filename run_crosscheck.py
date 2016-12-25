@@ -50,7 +50,8 @@ def main():
     
     videos = np.loadtxt(ann_file, dtype=str, delimiter=' ', comments=None)
     all_vids = videos[:, 0]
-    num_videos = len(all_vids)
+    non_existing_videos = crosscheck_videos(video_path, all_vids)
+    num_videos = len(non_existing_videos)
     process_step = num_videos/num_workers
     
     for worker in xrange(num_workers):
@@ -60,15 +61,15 @@ def main():
             end_ind = num_videos
         else:
             end_ind = (worker + 1) * process_step
-        vid_chunk = all_vids[start_ind:end_ind]
-        non_existing_videos = crosscheck_videos(video_path, vid_chunk)
+        vid_chunk = non_existing_videos[start_ind:end_ind]
+        
         filename = os.path.join(video_path, "v_%s.mp4")
         cmd_base = "youtube-dl -f 'bestvideo[height <=? 144][ext = mp4]' "
         #cmd_base = "youtube-dl -f 'best[ext = mp4]' "
         cmd_base += '"https://www.youtube.com/watch?v=%s" '
         cmd_base += '-o "%s"' % filename
         with open(output_filename, "w") as fobj:
-            for vid in non_existing_videos:
+            for vid in vid_chunk:
                 cmd = cmd_base % (vid, vid)
                 fobj.write("%s\n" % cmd)
 
