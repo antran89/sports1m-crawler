@@ -10,7 +10,8 @@ fi
 VIDEOPATH=$1
 ANN_FILE=$2 	#annotation file
 NUM_WORKERS=$3
-OUTFILE_PREFIX="command_list"
+TIME_STAMP=$(date +%d.%H%M%S)
+OUTFILE_PREFIX=$(printf 'cmd_list_%s' $TIME_STAMP)
 
 if [ -d $VIDEOPATH ]; then
     python run_crosscheck.py --video_path=$VIDEOPATH --ann_file=$ANN_FILE --num_workers=$NUM_WORKERS \
